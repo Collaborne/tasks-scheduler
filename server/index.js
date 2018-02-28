@@ -9,9 +9,10 @@ const moment = require('moment');
 // TODO: go through provided tasks description and calculate them
 const TOTAL_PROJECT_DAYS = 20;
 
-function _calcEnd(start) {
+function _calcEnd(start, timeAllocationPercentage) {
 	const startMoment = moment(start);
-	const endMoment = startMoment.add(TOTAL_PROJECT_DAYS, 'd');
+	const daysToAdd = TOTAL_PROJECT_DAYS / timeAllocationPercentage;
+	const endMoment = startMoment.add(daysToAdd, 'd');
 	return moment(endMoment).toDate();
 }
 
@@ -37,7 +38,7 @@ function calc(params) {
 	// TODO: check input dates are valid
 	const startDate = Date.parse(params.start);
 
-	const endDate = params.end ? new Date(params.end).toISOString() : _calcEnd(startDate);
+	const endDate = params.end ? new Date(params.end).toISOString() : _calcEnd(startDate, params.timeAllocationPercentage);
 
 	const timeAllocationPercentage = params.timeAllocationPercentage ? new Date(params.timeAllocationPercentage).toISOString() : _calcTimeAllocationPercentage();
 
