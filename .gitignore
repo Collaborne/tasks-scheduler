@@ -1,0 +1,12 @@
+/node_modules/
+
+  /.vscode/
+
+
+npm-shrinkwrap.json
+package-lock.json
+yarn.lock
+
+*.orig
+*.rej
+*.porig

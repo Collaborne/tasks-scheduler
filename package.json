@@ -1,0 +1,36 @@
+{
+  "name": "@collaborne/tasks-scheduler",
+  "version": "0.1.0",
+  "description": "A time-based scheduler for tasks",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Collaborne/tasks-scheduler/issues"
+  },
+  "homepage": "https://github.com/Collaborne/tasks-scheduler#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Collaborne/tasks-scheduler.git"
+  },
+  "scripts": {
+    "install": "npm-warn-shrinkwrap && check-node-version --package",
+    "lint": "eslint .",
+    "test": "node ${_NODE_ARGS} node_modules/.bin/_mocha --recursive",
+    "prepublish": "npm run lint",
+    "start": "node ${_NODE_ARGS} server/index.js"
+  },
+  "engines": {
+    "node": ">=8.9.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "eslint": "^4.12.0",
+    "eslint-config-collaborne": "^1.1.0",
+    "mocha": "^5.0.1"
+  },
+  "dependencies": {
+    "@collaborne/microservice-framework": "^0.2.0",
+    "check-node-version": "^3.0.0",
+    "log4js": "^2.3.10",
+    "npm-warn-shrinkwrap": "^1.0.2"
+  }
+}

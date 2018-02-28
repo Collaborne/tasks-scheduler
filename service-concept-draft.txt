@@ -1,0 +1,50 @@
+Input variables
+---------------
+
+const tasks = [
+	{id: 'create-ux-design', days: 2},
+	{id: 'implement-scheduling-lib', days: 1},
+	{id: 'implement-ui', days: 4},
+];
+const blockedPeriods = [
+	{start = '2018-02-01', end = '2018-02-02', }
+];
+const start = '2018-02-28';
+
+
+const end = '2018-04-01';
+const timeAllocationPercentage = 0.3;
+
+
+Function
+--------
+
+calc({
+	start,
+	end,
+	timeAllocationPercentage,
+	tasks,
+	blockedPeriods,
+})
+
+
+Output
+------
+
+{
+	deadlines: [
+		{id: 'create-ux-design', deadline: '2018-03-02'},
+		{id: 'implement-scheduling-lib', deadline: '2018-03-10'},
+		{id: 'implement-ui', deadline: '2018-03-20'},
+	],
+	nrProjectDays: 11,  => end - start,
+	timeAllocationPercentage,
+	end,
+}
+
+
+Rules
+-----
+
+- Don't plan weekends
+- Tasks are always executed directly after each other (i.e. there are no free periods except blocked periods)
