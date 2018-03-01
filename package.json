@@ -2,7 +2,7 @@
   "name": "collaborne-tasks-scheduler",
   "version": "1.1.0",
   "description": "A time-based scheduler for tasks",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/Collaborne/tasks-scheduler/issues"
   },
