@@ -17,7 +17,7 @@
 
 	"overrides": [
 		{
-			"files": "server/index.js",
+			"files": "src/index.js",
 
 			"parserOptions": {
 				"sourceType": "script"
