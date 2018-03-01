@@ -34,7 +34,7 @@ function _calcEnd(start, timeAllocationPercentage, totalProjectDays, blockedPeri
 }
 
 function _calcTimeAllocationPercentage(availableDays, totalProjectDays) {
-	return Math.round(totalProjectDays / availableDays * 10) / 10;
+	return totalProjectDays / availableDays;
 }
 
 /**

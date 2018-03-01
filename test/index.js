@@ -62,7 +62,7 @@ describe('Task scheduler', () => {
 				tasks: TASKS,
 			};
 			const result = calc(inputParams);
-			expect(result.timeAllocationPercentage).to.be.equals(1.0);
+			expect(result.timeAllocationPercentage).to.be.equals(1);
 		});
 
 		it('of 50% from 23 Feb. to 4 Apr. for a 20 days project', () => {
