@@ -77,8 +77,8 @@ function calcDeadlines(tasks, start, blockedPeriods) {
  * Interval of time not available for tasks scheduling.
  *
  * @typedef BlockedPeriod
- * @property {string} start String representing the start date of the period in ISO format.
- * @property {string} end String representing the end date of the period in ISO format.
+ * @property {string} start String representing the start date of the period in ISO format (eg. '2018-03-19T09:00:00.000Z').
+ * @property {string} end String representing the end date of the period in ISO format (eg. '2018-03-19T09:00:00.000Z').
  */
 
 /**
@@ -86,7 +86,7 @@ function calcDeadlines(tasks, start, blockedPeriods) {
  *
  * @typedef Scheduling
  * @property {Object[]} deadlines List of deadline objects
- * @property {string} end String representing the end date in ISO format.
+ * @property {string} end String representing the end date in ISO format (eg. '2018-03-19T09:00:00.000Z').
  * @property {number} nrProjectDays Number of business days required to complete the project.
  * @property {number} timeAllocationPercentage The time allocation percentage.
  * @property {number} totalProjectDays Total number of days required to complete the project.
@@ -97,8 +97,8 @@ function calcDeadlines(tasks, start, blockedPeriods) {
  *
  * @param {Object} params - Input parameters for scheduling calculation.
  * @param {Task[]} params.tasks - An array of tasks.
- * @param {string} params.start - A string representing the starting date in ISO format.
- * @param {string} [params.end] - A string representing the end date in ISO format.
+ * @param {string} params.start - A string representing the starting date in ISO format (eg. '2018-03-19T09:00:00.000Z').
+ * @param {string} [params.end] - A string representing the end date in ISO format (eg. '2018-03-19T09:00:00.000Z').
  * @param {number} [params.timeAllocationPercentage] - The time allocation percentage.
  * @param {BlockedPeriod[]} [params.blockedPeriods] - Array of blocked periods.
  * @return {Scheduling} an object describing the planning calculated
