@@ -3,7 +3,7 @@ const expect = chai.expect;
 
 const moment = require('moment');
 
-const Utils = require('../server/utils');
+const Utils = require('../src/date-utils');
 
 describe('Utils functions test', () => {
 	describe('states if a day is a business day', () => {

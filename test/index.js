@@ -1,7 +1,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 
-const {calc} = require('../server/index');
+const {calc} = require('../src/index');
 
 const FEB_23_DATE = '2018-02-23T09:00:00.000Z';
 const APR_20_DATE = '2018-04-20T08:00:00.000Z';

@@ -2,7 +2,7 @@
 
 'use strict';
 
-const Utils = require('./utils');
+const Utils = require('./date-utils');
 const moment = require('moment');
 
 // Temporarily hardcoded
