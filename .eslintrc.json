@@ -17,13 +17,6 @@
 
 	"overrides": [
 		{
-			"files": "src/index.js",
-
-			"parserOptions": {
-				"sourceType": "module"
-			}
-		},
-		{
 			"files": "test/**/*.js",
 
 			"env": {
