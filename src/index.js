@@ -14,17 +14,18 @@ const TOTAL_PROJECT_DAYS = 20;
  *
  * @param {number} start - The starting date in date string format.
  * @param {number} timeAllocationPercentage - The time allocation percentage.
+ * @param {number} totalProjectDays - Number of days required to complete the project.
  * @return {number} the end date in date string format.
  */
-function _calcEnd(start, timeAllocationPercentage) {
+function _calcEnd(start, timeAllocationPercentage, totalProjectDays) {
 	const startMoment = moment(start);
-	const daysToAdd = TOTAL_PROJECT_DAYS / timeAllocationPercentage;
+	const daysToAdd = totalProjectDays / timeAllocationPercentage;
 	const endMoment = Utils.addBusinessDays(startMoment, daysToAdd);
 	return moment(endMoment).toDate().getTime();
 }
 
-function _calcTimeAllocationPercentage(availableDays) {
-	return Math.round(TOTAL_PROJECT_DAYS / availableDays * 10) / 10;
+function _calcTimeAllocationPercentage(availableDays, totalProjectDays) {
+	return Math.round(totalProjectDays / availableDays * 10) / 10;
 }
 
 /**
@@ -38,6 +39,10 @@ function _parseDate(date) {
 	return isNaN(timestamp) ? undefined : timestamp;
 }
 
+function getTotaProjectDays(tasks) {
+	return tasks.reduce((acc, task) => acc + task.days, 0);
+}
+
 /**
  * Calculates the scheduling of a set of tasks.
  *
@@ -45,6 +50,7 @@ function _parseDate(date) {
  * @param {string} params.start - A string representing the starting date in ISO format.
  * @param {string} [params.end] - A string representing the end date in ISO format.
  * @param {number} [params.timeAllocationPercentage] - The time allocation percentage.
+ * @param {Object[]} [params.tasks] - An array of tasks.
  * @return {Object} an object describing the planning calculated
  */
 function calc(params) {
@@ -58,6 +64,8 @@ function calc(params) {
 		throw new Error('Both end and time allocation percentage cannot be set');
 	}
 
+	const totalProjectDays = getTotaProjectDays(params.tasks);
+
 	let endDate;
 	let timeAllocationPercentage;
 	let nrProjectDays;
@@ -66,17 +74,17 @@ function calc(params) {
 			throw new Error(`End date provided is not valid: ${params.end}`);
 		}
 		nrProjectDays = Utils.diffBusinessDays(params.start, params.end);
-		if (nrProjectDays < TOTAL_PROJECT_DAYS) {
+		if (nrProjectDays < totalProjectDays) {
 			// TODO: We should discuss the service behavior here
 			throw new Error('End date is too strict for completing the project');
 		}
 		endDate = new Date(params.end).getTime();
-		timeAllocationPercentage = _calcTimeAllocationPercentage(nrProjectDays);
+		timeAllocationPercentage = _calcTimeAllocationPercentage(nrProjectDays, totalProjectDays);
 	}
 
 	if (params.timeAllocationPercentage) {
-		endDate = _calcEnd(startDate, params.timeAllocationPercentage);
-		nrProjectDays = Utils.diffBusinessDays(params.start, params.end);
+		endDate = _calcEnd(startDate, params.timeAllocationPercentage, totalProjectDays);
+		nrProjectDays = Utils.diffBusinessDays(params.start, endDate);
 		timeAllocationPercentage = params.timeAllocationPercentage;
 	}
 
@@ -87,6 +95,7 @@ function calc(params) {
 		end,
 		nrProjectDays,
 		timeAllocationPercentage,
+		totalProjectDays,
 	};
 }
 
