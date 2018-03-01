@@ -1,5 +1,5 @@
 {
-  "name": "@collaborne/tasks-scheduler",
+  "name": "collaborne-tasks-scheduler",
   "version": "1.0.0",
   "description": "A time-based scheduler for tasks",
   "license": "UNLICENSED",
