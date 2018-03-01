@@ -48,10 +48,11 @@ function getTotalProjectDays(tasks) {
 	return tasks.reduce((acc, task) => acc + task.days, 0);
 }
 
-function calcDeadlines(tasks, start, blockedPeriods) {
+function calcDeadlines(tasks, start, blockedPeriods, timeAllocationPercentage) {
 	let lastDeadline = moment(start);
 	return tasks.map(task => {
-		const taskDeadline = businessAddWithBlocked(lastDeadline, task.days, blockedPeriods);
+		const days = task.days / timeAllocationPercentage;
+		const taskDeadline = businessAddWithBlocked(lastDeadline, days, blockedPeriods);
 		lastDeadline = taskDeadline;
 		return Object.assign({}, task, {
 			deadline: taskDeadline.format('YYYY-MM-DD'),
@@ -141,7 +142,7 @@ function calc(params) {
 		timeAllocationPercentage = params.timeAllocationPercentage;
 	}
 
-	const deadlines = calcDeadlines(params.tasks, startDate, blockedPeriods);
+	const deadlines = calcDeadlines(params.tasks, startDate, blockedPeriods, timeAllocationPercentage);
 
 	return {
 		deadlines,
