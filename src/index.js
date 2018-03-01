@@ -4,18 +4,34 @@
 
 const moment = require('moment-business-days');
 
+
+function businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods) {
+	let taskEnd = startMoment.businessAdd(daysToAdd)._d;
+	if (!blockedPeriods) {
+		return taskEnd;
+	}
+	// Check if task ends within one of the blocked periods provided
+	const blockPeriod = blockedPeriods.find(block => moment(taskEnd).isAfter(moment(block.start)));
+	if (blockPeriod) {
+		const nrBlockDays = moment(blockPeriod.start).businessDiff(moment(blockPeriod.end));
+		taskEnd = moment(taskEnd).businessAdd(nrBlockDays)._d;
+	}
+	return taskEnd;
+}
+
 /**
  * Calculates the end date for the scheduled task.
  *
  * @param {number} start - The starting date in date string format.
  * @param {number} timeAllocationPercentage - The time allocation percentage.
  * @param {number} totalProjectDays - Number of days required to complete the project.
+ * @param {Object[]} blockedPeriods - Array of blocked periods.
  * @return {number} the end date in date string format.
  */
-function _calcEnd(start, timeAllocationPercentage, totalProjectDays) {
+function _calcEnd(start, timeAllocationPercentage, totalProjectDays, blockedPeriods) {
 	const startMoment = moment(start);
 	const daysToAdd = totalProjectDays / timeAllocationPercentage;
-	const endMoment = startMoment.businessAdd(daysToAdd)._d;
+	const endMoment = businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods);
 	return moment(endMoment).toDate().getTime();
 }
 
@@ -38,11 +54,11 @@ function getTotaProjectDays(tasks) {
 	return tasks.reduce((acc, task) => acc + task.days, 0);
 }
 
-function calcDeadlines(tasks, start) {
+function calcDeadlines(tasks, start, blockedPeriods) {
 	const startMoment = moment(start);
 	const deadlines = [];
 	tasks.reduce((acc, task) => {
-		const taskDeadline = acc.businessAdd(task.days)._d;
+		const taskDeadline = businessAddWithBlocked(acc, task.days, blockedPeriods);
 		deadlines.push(Object.assign({}, task, {
 			deadline: taskDeadline.toISOString()
 		}));
@@ -55,10 +71,11 @@ function calcDeadlines(tasks, start) {
  * Calculates the scheduling of a set of tasks.
  *
  * @param {Object} params - Input parameters for scheduling calculation.
+ * @param {Object[]} params.tasks - An array of tasks.
  * @param {string} params.start - A string representing the starting date in ISO format.
  * @param {string} [params.end] - A string representing the end date in ISO format.
  * @param {number} [params.timeAllocationPercentage] - The time allocation percentage.
- * @param {Object[]} [params.tasks] - An array of tasks.
+ * @param {Object[]} [params.blockedPeriods] - Array of blocked periods.
  * @return {Object} an object describing the planning calculated
  */
 function calc(params) {
@@ -92,12 +109,12 @@ function calc(params) {
 	}
 
 	if (params.timeAllocationPercentage) {
-		endDate = _calcEnd(startDate, params.timeAllocationPercentage, totalProjectDays);
+		endDate = _calcEnd(startDate, params.timeAllocationPercentage, totalProjectDays, params.blockedPeriods);
 		nrProjectDays = moment(params.start).businessDiff(moment(endDate));
 		timeAllocationPercentage = params.timeAllocationPercentage;
 	}
 
-	const deadlines = calcDeadlines(params.tasks, params.start);
+	const deadlines = calcDeadlines(params.tasks, params.start, params.blockedPeriods);
 
 	// Properly format output
 	const end = new Date(endDate).toISOString();

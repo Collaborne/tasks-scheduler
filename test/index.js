@@ -23,6 +23,13 @@ const TASKS = [
 ];
 
 const EXPECTED_DEADLINES = ['2018-03-05T09:00:00.000Z', '2018-03-19T09:00:00.000Z', MAR_23_DATE];
+const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-07T09:00:00.000Z', '2018-03-23T09:00:00.000Z', '2018-04-02T08:00:00.000Z'];
+const BLOCKED_PERIODS = [
+	{
+		end: '2018-02-26',
+		start: '2018-02-28',
+	}
+];
 
 describe('Task scheduler', () => {
 	describe('correctly calculates end date', () => {
@@ -89,10 +96,24 @@ describe('Task scheduler', () => {
 				tasks: TASKS,
 			};
 			const result = calc(inputParams);
-			console.log(JSON.stringify(result.deadlines));
 			expect(result.deadlines).to.have.lengthOf(inputParams.tasks.length);
 			for (let i = 0; i < result.deadlines.length; i++) {
 				expect(result.deadlines[i].deadline).to.be.equals(EXPECTED_DEADLINES[i]);
+			}
+		});
+
+		it('with blocked periods', () => {
+			const inputParams = {
+				blockedPeriods: BLOCKED_PERIODS,
+				end: MAR_23_DATE,
+				start: FEB_23_DATE,
+				tasks: TASKS,
+			};
+			const result = calc(inputParams);
+			console.log(JSON.stringify(result.deadlines));
+			expect(result.deadlines).to.have.lengthOf(inputParams.tasks.length);
+			for (let i = 0; i < result.deadlines.length; i++) {
+				expect(result.deadlines[i].deadline).to.be.equals(EXPECTED_DEADLINES_WITH_BLOCKS[i]);
 			}
 		});
 	});
