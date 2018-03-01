@@ -24,13 +24,13 @@ function businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods) {
  * @param {number} timeAllocationPercentage - The time allocation percentage.
  * @param {number} totalProjectDays - Number of days required to complete the project.
  * @param {Object[]} blockedPeriods - Array of blocked periods.
- * @return {number} the end date in date string format.
+ * @return {Object} the end date in date string format.
  */
 function _calcEnd(start, timeAllocationPercentage, totalProjectDays, blockedPeriods) {
 	const startMoment = moment(start);
 	const daysToAdd = totalProjectDays / timeAllocationPercentage;
 	const endMoment = businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods);
-	return moment(endMoment).toDate().getTime();
+	return moment(endMoment);
 }
 
 function _calcTimeAllocationPercentage(availableDays, totalProjectDays) {
@@ -58,7 +58,7 @@ function calcDeadlines(tasks, start, blockedPeriods) {
 	tasks.reduce((acc, task) => {
 		const taskDeadline = businessAddWithBlocked(acc, task.days, blockedPeriods);
 		deadlines.push(Object.assign({}, task, {
-			deadline: taskDeadline.toISOString()
+			deadline: moment(taskDeadline).format('YYYY-MM-DD'),
 		}));
 		return moment(taskDeadline);
 	}, startMoment);
@@ -77,8 +77,8 @@ function calcDeadlines(tasks, start, blockedPeriods) {
  * Interval of time not available for tasks scheduling.
  *
  * @typedef BlockedPeriod
- * @property {string} start String representing the start date of the period in ISO format (eg. '2018-03-19T09:00:00.000Z').
- * @property {string} end String representing the end date of the period in ISO format (eg. '2018-03-19T09:00:00.000Z').
+ * @property {string} start String representing the start date of the period in ISO format (eg. '2018-03-19').
+ * @property {string} end String representing the end date of the period in ISO format (eg. '2018-03-19').
  */
 
 /**
@@ -86,7 +86,7 @@ function calcDeadlines(tasks, start, blockedPeriods) {
  *
  * @typedef Scheduling
  * @property {Object[]} deadlines List of deadline objects
- * @property {string} end String representing the end date in ISO format (eg. '2018-03-19T09:00:00.000Z').
+ * @property {string} end String representing the end date in ISO format (eg. '2018-03-19').
  * @property {number} nrProjectDays Number of business days required to complete the project.
  * @property {number} timeAllocationPercentage The time allocation percentage.
  * @property {number} totalProjectDays Total number of days required to complete the project.
@@ -97,8 +97,8 @@ function calcDeadlines(tasks, start, blockedPeriods) {
  *
  * @param {Object} params - Input parameters for scheduling calculation.
  * @param {Task[]} params.tasks - An array of tasks.
- * @param {string} params.start - A string representing the starting date in ISO format (eg. '2018-03-19T09:00:00.000Z').
- * @param {string} [params.end] - A string representing the end date in ISO format (eg. '2018-03-19T09:00:00.000Z').
+ * @param {string} params.start - A string representing the starting date in ISO format (eg. '2018-03-19').
+ * @param {string} [params.end] - A string representing the end date in ISO format (eg. '2018-03-19').
  * @param {number} [params.timeAllocationPercentage] - The time allocation percentage.
  * @param {BlockedPeriod[]} [params.blockedPeriods] - Array of blocked periods.
  * @return {Scheduling} an object describing the planning calculated
@@ -129,20 +129,20 @@ function calc(params) {
 			// TODO: We should discuss the service behavior here
 			throw new Error('End date is too strict for completing the project');
 		}
-		endDate = new Date(params.end).getTime();
+		endDate = moment(params.end);
 		timeAllocationPercentage = _calcTimeAllocationPercentage(nrProjectDays, totalProjectDays);
 	}
 
 	if (params.timeAllocationPercentage) {
 		endDate = _calcEnd(startDate, params.timeAllocationPercentage, totalProjectDays, params.blockedPeriods);
-		nrProjectDays = moment(params.start).businessDiff(moment(endDate));
+		nrProjectDays = moment(params.start).businessDiff(endDate);
 		timeAllocationPercentage = params.timeAllocationPercentage;
 	}
 
 	const deadlines = calcDeadlines(params.tasks, params.start, params.blockedPeriods);
 
 	// Properly format output
-	const end = new Date(endDate).toISOString();
+	const end = endDate.format('YYYY-MM-DD');
 
 	return {
 		deadlines,

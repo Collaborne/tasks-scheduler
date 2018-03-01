@@ -3,9 +3,9 @@ const expect = chai.expect;
 
 const {calc} = require('../src/index');
 
-const FEB_23_DATE = '2018-02-23T09:00:00.000Z';
-const APR_20_DATE = '2018-04-20T08:00:00.000Z';
-const MAR_23_DATE = '2018-03-23T09:00:00.000Z';
+const FEB_23_DATE = '2018-02-23';
+const APR_20_DATE = '2018-04-20';
+const MAR_23_DATE = '2018-03-23';
 
 const TASKS = [
 	{
@@ -22,8 +22,8 @@ const TASKS = [
 	},
 ];
 
-const EXPECTED_DEADLINES = ['2018-03-05T09:00:00.000Z', '2018-03-19T09:00:00.000Z', MAR_23_DATE];
-const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-07T09:00:00.000Z', '2018-03-23T09:00:00.000Z', '2018-04-02T08:00:00.000Z'];
+const EXPECTED_DEADLINES = ['2018-03-05', '2018-03-19', MAR_23_DATE];
+const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-07', '2018-03-23', '2018-04-02'];
 const BLOCKED_PERIODS = [
 	{
 		end: '2018-02-26',
