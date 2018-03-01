@@ -2,35 +2,31 @@
 
 const moment = require('moment-business-days');
 
-
 function businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods) {
-	let taskEnd = startMoment.businessAdd(daysToAdd)._d;
-	if (!blockedPeriods) {
-		return taskEnd;
-	}
+	const taskEnd = moment(startMoment.businessAdd(daysToAdd)._d);
+
 	// Check if task ends within one of the blocked periods provided
-	const blockPeriod = blockedPeriods.find(block => moment(taskEnd).isAfter(moment(block.start)));
+	const blockPeriod = blockedPeriods.find(block => taskEnd.isAfter(block.start));
 	if (blockPeriod) {
-		const nrBlockDays = moment(blockPeriod.start).businessDiff(moment(blockPeriod.end));
-		taskEnd = moment(taskEnd).businessAdd(nrBlockDays)._d;
+		// Move the deadline by the number of blocked days
+		return moment(taskEnd.businessAdd(blockPeriod.nrBlockDays)._d);
 	}
+
 	return taskEnd;
 }
 
 /**
  * Calculates the end date for the scheduled task.
  *
- * @param {number} start - The starting date in date string format.
+ * @param {Moment} start - The starting date in date string format.
  * @param {number} timeAllocationPercentage - The time allocation percentage.
  * @param {number} totalProjectDays - Number of days required to complete the project.
  * @param {Object[]} blockedPeriods - Array of blocked periods.
  * @return {Object} the end date in date string format.
  */
 function _calcEnd(start, timeAllocationPercentage, totalProjectDays, blockedPeriods) {
-	const startMoment = moment(start);
 	const daysToAdd = totalProjectDays / timeAllocationPercentage;
-	const endMoment = businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods);
-	return moment(endMoment);
+	return businessAddWithBlocked(start, daysToAdd, blockedPeriods);
 }
 
 function _calcTimeAllocationPercentage(availableDays, totalProjectDays) {
@@ -38,14 +34,14 @@ function _calcTimeAllocationPercentage(availableDays, totalProjectDays) {
 }
 
 /**
- * Checks if a provided string is a valid date and parses it.
+ * Checks if a provided string is a valid date
  *
  * @param {string} date - The date to parse.
- * @return {undefined | number} undefined if the input date is not valid, the in date string format otherwise.
+ * @return {boolean} true if the input date is valid
  */
-function _parseDate(date) {
+function _isValidDate(date) {
 	const timestamp = Date.parse(date);
-	return isNaN(timestamp) ? undefined : timestamp;
+	return !isNaN(timestamp);
 }
 
 function getTotalProjectDays(tasks) {
@@ -53,16 +49,14 @@ function getTotalProjectDays(tasks) {
 }
 
 function calcDeadlines(tasks, start, blockedPeriods) {
-	const startMoment = moment(start);
-	const deadlines = [];
-	tasks.reduce((acc, task) => {
-		const taskDeadline = businessAddWithBlocked(acc, task.days, blockedPeriods);
-		deadlines.push(Object.assign({}, task, {
-			deadline: moment(taskDeadline).format('YYYY-MM-DD'),
-		}));
-		return moment(taskDeadline);
-	}, startMoment);
-	return deadlines;
+	let lastDeadline = moment(start);
+	return tasks.map(task => {
+		const taskDeadline = businessAddWithBlocked(lastDeadline, task.days, blockedPeriods);
+		lastDeadline = taskDeadline;
+		return Object.assign({}, task, {
+			deadline: taskDeadline.format('YYYY-MM-DD'),
+		});
+	});
 }
 
 /**
@@ -104,49 +98,54 @@ function calcDeadlines(tasks, start, blockedPeriods) {
  * @return {Scheduling} an object describing the planning calculated
  */
 function calc(params) {
-	const startDate = _parseDate(params.start);
-	if (!_parseDate(params.start)) {
-		throw new Error(`Start date provided is not valid: ${params.start}`);
+	// Input validation
+	if (!_isValidDate(params.start)) {
+		throw new Error(`Invalid start date (${params.start}). Must be in format YYYY-MM-DD.`);
+	}
+	if (params.end && !_isValidDate(params.end)) {
+		throw new Error(`Invalid end date (${params.end}). Must be in format YYYY-MM-DD.`);
+	}
+	if (Boolean(params.end) && Boolean(params.timeAllocationPercentage)) {
+		throw new Error('Only provide end date or time allocation percentage');
 	}
 
-	// Raise an exception if both end and time allocation percentage are set
-	if (Boolean(params.end) && Boolean(params.timeAllocationPercentage)) {
-		throw new Error('Both end and time allocation percentage cannot be set');
-	}
+	const startDate = moment(params.start);
 
 	const totalProjectDays = getTotalProjectDays(params.tasks);
 
-	let endDate;
-	let timeAllocationPercentage;
-	let nrProjectDays;
-	if (params.end) {
-		if (!_parseDate(params.end)) {
-			throw new Error(`End date provided is not valid: ${params.end}`);
-		}
+	const blockedPeriods = (params.blockedPeriods || []).map(period => ({
+		nrBlockDays: moment(period.start).businessDiff(moment(period.end)),
+		start: period.start,
+	}));
 
-		nrProjectDays = moment(params.start).businessDiff(moment(params.end));
-		if (nrProjectDays < totalProjectDays) {
-			// TODO: We should discuss the service behavior here
-			throw new Error('End date is too strict for completing the project');
-		}
+	let endDate;
+	if (params.end) {
+		// End date is given -> calculate time allocation
 		endDate = moment(params.end);
-		timeAllocationPercentage = _calcTimeAllocationPercentage(nrProjectDays, totalProjectDays);
+	} else {
+		// Time allocation is given -> calculate end date
+		endDate = _calcEnd(startDate, params.timeAllocationPercentage, totalProjectDays, blockedPeriods);
 	}
 
-	if (params.timeAllocationPercentage) {
-		endDate = _calcEnd(startDate, params.timeAllocationPercentage, totalProjectDays, params.blockedPeriods);
-		nrProjectDays = moment(params.start).businessDiff(endDate);
+	const nrProjectDays = startDate.businessDiff(moment(endDate));
+	if (nrProjectDays < totalProjectDays) {
+		// TODO: We should discuss the service behavior here
+		throw new Error('End date is too strict for completing the project');
+	}
+
+	let timeAllocationPercentage;
+	if (params.end) {
+		// End date is given -> calculate time allocation
+		timeAllocationPercentage = _calcTimeAllocationPercentage(nrProjectDays, totalProjectDays);
+	} else {
 		timeAllocationPercentage = params.timeAllocationPercentage;
 	}
 
-	const deadlines = calcDeadlines(params.tasks, params.start, params.blockedPeriods);
-
-	// Properly format output
-	const end = endDate.format('YYYY-MM-DD');
+	const deadlines = calcDeadlines(params.tasks, startDate, blockedPeriods);
 
 	return {
 		deadlines,
-		end,
+		end: endDate.format('YYYY-MM-DD'),
 		nrProjectDays,
 		timeAllocationPercentage,
 		totalProjectDays,
