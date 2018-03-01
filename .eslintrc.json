@@ -20,7 +20,7 @@
 			"files": "src/index.js",
 
 			"parserOptions": {
-				"sourceType": "script"
+				"sourceType": "module"
 			}
 		},
 		{

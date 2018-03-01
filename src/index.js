@@ -1,7 +1,5 @@
 /* eslint-disable max-statements*/
 
-'use strict';
-
 const moment = require('moment-business-days');
 
 
