@@ -48,7 +48,7 @@ function _parseDate(date) {
 	return isNaN(timestamp) ? undefined : timestamp;
 }
 
-function getTotaProjectDays(tasks) {
+function getTotalProjectDays(tasks) {
 	return tasks.reduce((acc, task) => acc + task.days, 0);
 }
 
@@ -114,7 +114,7 @@ function calc(params) {
 		throw new Error('Both end and time allocation percentage cannot be set');
 	}
 
-	const totalProjectDays = getTotaProjectDays(params.tasks);
+	const totalProjectDays = getTotalProjectDays(params.tasks);
 
 	let endDate;
 	let timeAllocationPercentage;
