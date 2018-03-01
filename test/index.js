@@ -109,7 +109,6 @@ describe('Task scheduler', () => {
 				tasks: TASKS,
 			};
 			const result = calc(inputParams);
-			console.log(JSON.stringify(result.deadlines));
 			expect(result.deadlines).to.have.lengthOf(inputParams.tasks.length);
 			for (let i = 0; i < result.deadlines.length; i++) {
 				expect(result.deadlines[i].deadline).to.be.equals(EXPECTED_DEADLINES_WITH_BLOCKS[i]);
