@@ -22,6 +22,8 @@ const TASKS = [
 	},
 ];
 
+const EXPECTED_DEADLINES = ['2018-03-05T09:00:00.000Z', '2018-03-19T09:00:00.000Z', MAR_23_DATE];
+
 describe('Task scheduler', () => {
 	describe('correctly calculates end date', () => {
 		it('with 100% time allocation', () => {
@@ -44,6 +46,7 @@ describe('Task scheduler', () => {
 			expect(result.end).to.be.equals(APR_20_DATE);
 		});
 	});
+
 	describe('correctly calculates time allocation', () => {
 		it('of 100% from 23 Feb. to 23 Mar. for a 20 days project', () => {
 			const inputParams = {
@@ -65,8 +68,9 @@ describe('Task scheduler', () => {
 			expect(result.timeAllocationPercentage).to.be.equals(0.5);
 		});
 	});
+
 	describe('correctly calculates total project days', () => {
-		it('for a se of given tasks', () => {
+		it('for a set of given tasks', () => {
 			const inputParams = {
 				end: MAR_23_DATE,
 				start: FEB_23_DATE,
@@ -74,6 +78,22 @@ describe('Task scheduler', () => {
 			};
 			const result = calc(inputParams);
 			expect(result.totalProjectDays).to.be.equals(20);
+		});
+	});
+
+	describe('correctly calculates deadlines', () => {
+		it('for a set of given tasks', () => {
+			const inputParams = {
+				end: MAR_23_DATE,
+				start: FEB_23_DATE,
+				tasks: TASKS,
+			};
+			const result = calc(inputParams);
+			console.log(JSON.stringify(result.deadlines));
+			expect(result.deadlines).to.have.lengthOf(inputParams.tasks.length);
+			for (let i = 0; i < result.deadlines.length; i++) {
+				expect(result.deadlines[i].deadline).to.be.equals(EXPECTED_DEADLINES[i]);
+			}
 		});
 	});
 });

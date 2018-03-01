@@ -38,6 +38,19 @@ function getTotaProjectDays(tasks) {
 	return tasks.reduce((acc, task) => acc + task.days, 0);
 }
 
+function calcDeadlines(tasks, start) {
+	const startMoment = moment(start);
+	const deadlines = [];
+	tasks.reduce((acc, task) => {
+		const taskDeadline = acc.businessAdd(task.days)._d;
+		deadlines.push(Object.assign({}, task, {
+			deadline: taskDeadline.toISOString()
+		}));
+		return moment(taskDeadline);
+	}, startMoment);
+	return deadlines;
+}
+
 /**
  * Calculates the scheduling of a set of tasks.
  *
@@ -84,10 +97,13 @@ function calc(params) {
 		timeAllocationPercentage = params.timeAllocationPercentage;
 	}
 
+	const deadlines = calcDeadlines(params.tasks, params.start);
+
 	// Properly format output
 	const end = new Date(endDate).toISOString();
 
 	return {
+		deadlines,
 		end,
 		nrProjectDays,
 		timeAllocationPercentage,
