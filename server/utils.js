@@ -30,7 +30,22 @@ function diffBusinessDays(start, end) {
 	return daysBetween;
 }
 
+function addBusinessDays(start, days) {
+	let finalDate = moment(start);
+	let remaining = days;
+
+	while (remaining) {
+		finalDate.add(1, 'd');
+		if (isBusinessDay(finalDate)) {
+			remaining--;
+		}
+	}
+
+	return finalDate;
+}
+
 module.exports = {
+	addBusinessDays,
 	diffBusinessDays,
 	isBusinessDay
 };
