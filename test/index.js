@@ -22,15 +22,6 @@ const TASKS = [
 	},
 ];
 
-const EXPECTED_DEADLINES = ['2018-03-05', '2018-03-19', MAR_23_DATE];
-const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-07', '2018-03-23', '2018-04-02'];
-const BLOCKED_PERIODS = [
-	{
-		end: '2018-02-26',
-		start: '2018-02-28',
-	}
-];
-
 describe('Task scheduler', () => {
 	describe('correctly calculates end date', () => {
 		it('with 100% time allocation', () => {
@@ -90,6 +81,7 @@ describe('Task scheduler', () => {
 
 	describe('correctly calculates deadlines', () => {
 		it('for a set of given tasks', () => {
+			const EXPECTED_DEADLINES = ['2018-03-05', '2018-03-19', MAR_23_DATE];
 			const inputParams = {
 				end: MAR_23_DATE,
 				start: FEB_23_DATE,
@@ -103,6 +95,13 @@ describe('Task scheduler', () => {
 		});
 
 		it('with blocked periods', () => {
+			const BLOCKED_PERIODS = [
+				{
+					end: '2018-02-26',
+					start: '2018-02-28',
+				}
+			];
+			const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-07', '2018-03-23', '2018-04-02'];
 			const inputParams = {
 				blockedPeriods: BLOCKED_PERIODS,
 				end: MAR_23_DATE,
