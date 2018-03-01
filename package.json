@@ -29,6 +29,7 @@
   "dependencies": {
     "check-node-version": "^3.0.0",
     "moment": "^2.20.1",
+    "moment-business-days": "^1.0.6",
     "npm-warn-shrinkwrap": "^1.0.2"
   }
 }

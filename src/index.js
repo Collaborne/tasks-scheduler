@@ -2,12 +2,7 @@
 
 'use strict';
 
-const Utils = require('./date-utils');
-const moment = require('moment');
-
-// Temporarily hardcoded
-// TODO: go through provided tasks description and calculate them
-const TOTAL_PROJECT_DAYS = 20;
+const moment = require('moment-business-days');
 
 /**
  * Calculates the end date for the scheduled task.
@@ -20,7 +15,7 @@ const TOTAL_PROJECT_DAYS = 20;
 function _calcEnd(start, timeAllocationPercentage, totalProjectDays) {
 	const startMoment = moment(start);
 	const daysToAdd = totalProjectDays / timeAllocationPercentage;
-	const endMoment = Utils.addBusinessDays(startMoment, daysToAdd);
+	const endMoment = startMoment.businessAdd(daysToAdd)._d;
 	return moment(endMoment).toDate().getTime();
 }
 
@@ -73,7 +68,8 @@ function calc(params) {
 		if (!_parseDate(params.end)) {
 			throw new Error(`End date provided is not valid: ${params.end}`);
 		}
-		nrProjectDays = Utils.diffBusinessDays(params.start, params.end);
+
+		nrProjectDays = moment(params.start).businessDiff(moment(params.end));
 		if (nrProjectDays < totalProjectDays) {
 			// TODO: We should discuss the service behavior here
 			throw new Error('End date is too strict for completing the project');
@@ -84,7 +80,7 @@ function calc(params) {
 
 	if (params.timeAllocationPercentage) {
 		endDate = _calcEnd(startDate, params.timeAllocationPercentage, totalProjectDays);
-		nrProjectDays = Utils.diffBusinessDays(params.start, endDate);
+		nrProjectDays = moment(params.start).businessDiff(moment(endDate));
 		timeAllocationPercentage = params.timeAllocationPercentage;
 	}
 
