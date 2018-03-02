@@ -11,6 +11,10 @@
     "type": "git",
     "url": "git+https://github.com/Collaborne/tasks-scheduler.git"
   },
+  "files": [
+    "dist/*",
+    "lib/*"
+  ],
   "main": "./lib/index.js",
   "scripts": {
     "install": "npm-warn-shrinkwrap && check-node-version --package",
