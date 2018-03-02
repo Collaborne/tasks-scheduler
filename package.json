@@ -13,16 +13,17 @@
   },
   "files": [
     "dist/*",
-    "lib/*"
+    "lib/*",
+    "src/*"
   ],
   "main": "./lib/index.js",
   "scripts": {
     "install": "npm-warn-shrinkwrap && check-node-version --package",
-    "compile": "npm run lint && babel --presets es2015 -d lib/ src/",
+    "compile": "npm run lint && babel --presets es2015 --source-maps -d lib/ src/",
     "lint": "eslint src test",
     "build": "npm run build-dist && npm run build-min",
-    "build-dist": "mkdir -p dist && browserify -r $npm_package_main:collaborne-tasks-scheduler > dist/collaborne-tasks-scheduler.js",
-    "build-min": "uglifyjs dist/collaborne-tasks-scheduler.js --comments -o dist/collaborne-tasks-scheduler.min.js",
+    "build-dist": "mkdir -p dist && browserify -d -r $npm_package_main:collaborne-tasks-scheduler | exorcist dist/collaborne-tasks-scheduler.js.map > dist/collaborne-tasks-scheduler.js",
+    "build-min": "uglifyjs dist/collaborne-tasks-scheduler.js --comments --source-map \"content='./dist/collaborne-tasks-scheduler.js.map'\" -o dist/collaborne-tasks-scheduler.min.js",
     "prepublish": "npm run compile && npm run build",
     "test": "node ${_NODE_ARGS} node_modules/.bin/_mocha --recursive"
   },
@@ -38,8 +39,9 @@
     "chai": "^4.1.2",
     "eslint": "^4.12.0",
     "eslint-config-collaborne": "^1.1.0",
+    "exorcist": "^1.0.1",
     "mocha": "^5.0.1",
-    "uglify-js": "2.6.2"
+    "uglify-js": "^3.3.12"
   },
   "dependencies": {
     "check-node-version": "^3.0.0",
