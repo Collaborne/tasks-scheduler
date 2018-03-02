@@ -4,13 +4,15 @@ const moment = require('moment-business-days');
 
 function businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods) {
 	// Function businessAdd() fails on non-integers
+	// NB. Round up to express the next available business day
 	const taskEnd = moment(startMoment.businessAdd(Math.ceil(daysToAdd))._d);
 
 	// Check if task ends within one of the blocked periods provided
-	const blockPeriod = blockedPeriods.find(block => taskEnd.isAfter(block.start));
+	const blockPeriod = blockedPeriods.find(block => taskEnd.isSame(block.start) || taskEnd.isAfter(block.start));
 	if (blockPeriod) {
 		// Move the deadline by the number of blocked days
-		return moment(taskEnd.businessAdd(blockPeriod.nrBlockDays)._d);
+		// NB. Add one to round up to the next available business day
+		return moment(taskEnd.businessAdd(blockPeriod.nrBlockDays + 1)._d);
 	}
 
 	return taskEnd;
@@ -22,7 +24,7 @@ function businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods) {
  * @param {Moment} start - The starting date in date string format.
  * @param {number} timeAllocation - The time allocation percentage.
  * @param {number} nrNormDays - Number of normalized days required to complete all tasks.
- * @param {Object[]} blockedPeriods - Array of blocked periods.
+ * @param {BlockedPeriod[]} blockedPeriods - Array of blocked periods.
  * @return {Object} the end date in date string format.
  */
 function calcEnd(start, timeAllocation, nrNormDays, blockedPeriods) {
@@ -68,7 +70,8 @@ function calcDeadlines(tasks, start, blockedPeriods, timeAllocation) {
  */
 
 /**
- * Interval of time not available for tasks scheduling.
+ * Closed interval of time not available for tasks scheduling.
+ * Eg. blocked period ['2018-03-07', '2018-03-08'] shifts scheduling of 2 days
  *
  * @typedef BlockedPeriod
  * @property {string} start String representing the start date of the period in ISO format (eg. '2018-03-19').
