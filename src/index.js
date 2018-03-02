@@ -54,10 +54,10 @@ function calcDeadlines(tasks, start, blockedPeriods, timeAllocation) {
 		lastTaskNormDays += task.nrNormDays;
 		const realDays = lastTaskNormDays / timeAllocation;
 		const taskDeadline = businessAddWithBlocked(startMoment, realDays, blockedPeriods);
-		return Object.assign({}, task, {
+		return {
 			deadline: taskDeadline.format('YYYY-MM-DD'),
-			realDays,
-		});
+			id: task.id,
+		};
 	});
 }
 
