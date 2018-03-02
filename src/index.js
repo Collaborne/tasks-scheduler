@@ -142,9 +142,12 @@ function schedule(params) {
 	}
 
 	const deadlines = calcDeadlines(params.tasks, startDate, blockedPeriods, timeAllocation);
+	const deadlineById = deadlines.reduce((acc, task) => Object.assign(acc, {
+		[task.id]: task.deadline,
+	}), {});
 
 	return {
-		deadlines,
+		deadlines: deadlineById,
 		end: endDate.format('YYYY-MM-DD'),
 		nrNormDays,
 		nrRealDays,

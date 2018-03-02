@@ -12,13 +12,15 @@ const END_DATE_8_MARCH = '2018-03-08';
 // Tuesday 13 March, 2018
 const END_DATE_13_MARCH = '2018-03-13';
 
+const TASK1_ID = 'First-task';
+const TASK2_ID = 'Second-task';
 const TASKS = [
 	{
-		id: 'First-task',
+		id: TASK1_ID,
 		nrNormDays: 1.4
 	},
 	{
-		id: 'Second-task',
+		id: TASK2_ID,
 		nrNormDays: 1.4
 	},
 ];
@@ -112,20 +114,20 @@ describe('Task scheduler', () => {
 			expect(result.deadlines).to.be.empty;
 		});
 		it('for a set of given tasks', () => {
-			const EXPECTED_DEADLINES = ['2018-03-07', END_DATE_8_MARCH];
 			const inputParams = {
 				end: END_DATE_8_MARCH,
 				start: START_DATE,
 				tasks: TASKS,
 			};
 			const result = schedule(inputParams);
-			expect(result.deadlines).to.have.lengthOf(inputParams.tasks.length);
-			for (let i = 0; i < result.deadlines.length; i++) {
-				expect(result.deadlines[i].deadline).to.be.equals(EXPECTED_DEADLINES[i]);
-			}
+			const deadlines = result.deadlines;
+			expect(Object.keys(deadlines)).to.have.lengthOf(inputParams.tasks.length);
+			expect(deadlines[TASK1_ID]).to.be.equals('2018-03-07');
+			expect(deadlines[TASK2_ID]).to.be.equals(END_DATE_8_MARCH);
+
 			// Check also that last task's deadline equals the end of the project
-			const lastDeadline = result.deadlines[TASKS.length - 1].deadline;
-			expect(result.end).to.be.equals(lastDeadline);
+			const lastTask = TASKS[TASKS.length - 1];
+			expect(result.end).to.be.equals(deadlines[lastTask.id]);
 		});
 
 		it('with blocked periods', () => {
@@ -135,7 +137,6 @@ describe('Task scheduler', () => {
 					start: '2018-03-07',
 				}
 			];
-			const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-06', END_DATE_13_MARCH];
 			const inputParams = {
 				blockedPeriods: BLOCKED_PERIODS,
 				start: START_DATE,
@@ -143,13 +144,13 @@ describe('Task scheduler', () => {
 				timeAllocation: 1,
 			};
 			const result = schedule(inputParams);
-			expect(result.deadlines).to.have.lengthOf(inputParams.tasks.length);
-			for (let i = 0; i < result.deadlines.length; i++) {
-				expect(result.deadlines[i].deadline).to.be.equals(EXPECTED_DEADLINES_WITH_BLOCKS[i]);
-			}
+			const deadlines = result.deadlines;
+			expect(deadlines[TASK1_ID]).to.be.equals('2018-03-06');
+			expect(deadlines[TASK2_ID]).to.be.equals(END_DATE_13_MARCH);
+
 			// Check also that last task's deadline equals the end of the project
-			const lastDeadline = result.deadlines[TASKS.length - 1].deadline;
-			expect(result.end).to.be.equals(lastDeadline);
+			const lastTask = TASKS[TASKS.length - 1];
+			expect(result.end).to.be.equals(deadlines[lastTask.id]);
 		});
 
 		it('ignore weekend blocked period', () => {
@@ -159,7 +160,6 @@ describe('Task scheduler', () => {
 					start: '2018-03-10',
 				}
 			];
-			const EXPECTED_DEADLINES = ['2018-03-07', END_DATE_8_MARCH];
 			const inputParams = {
 				blockedPeriods: BLOCKED_PERIODS,
 				end: END_DATE_8_MARCH,
@@ -167,13 +167,14 @@ describe('Task scheduler', () => {
 				tasks: TASKS,
 			};
 			const result = schedule(inputParams);
-			expect(result.deadlines).to.have.lengthOf(inputParams.tasks.length);
-			for (let i = 0; i < result.deadlines.length; i++) {
-				expect(result.deadlines[i].deadline).to.be.equals(EXPECTED_DEADLINES[i]);
-			}
+			const deadlines = result.deadlines;
+			expect(Object.keys(deadlines)).to.have.lengthOf(inputParams.tasks.length);
+			expect(deadlines[TASK1_ID]).to.be.equals('2018-03-07');
+			expect(deadlines[TASK2_ID]).to.be.equals(END_DATE_8_MARCH);
+
 			// Check also that last task's deadline equals the end of the project
-			const lastDeadline = result.deadlines[TASKS.length - 1].deadline;
-			expect(result.end).to.be.equals(lastDeadline);
+			const lastTask = TASKS[TASKS.length - 1];
+			expect(result.end).to.be.equals(deadlines[lastTask.id]);
 		});
 	});
 });
