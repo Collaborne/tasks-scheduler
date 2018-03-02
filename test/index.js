@@ -135,7 +135,7 @@ describe('Task scheduler', () => {
 					start: '2018-03-07',
 				}
 			];
-			const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-12', END_DATE_13_MARCH];
+			const EXPECTED_DEADLINES_WITH_BLOCKS = ['2018-03-06', END_DATE_13_MARCH];
 			const inputParams = {
 				blockedPeriods: BLOCKED_PERIODS,
 				start: START_DATE,

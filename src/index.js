@@ -5,7 +5,7 @@ const moment = require('moment-business-days');
 function businessAddWithBlocked(startMoment, daysToAdd, blockedPeriods) {
 	// Function businessAdd() fails on non-integers
 	// NB. Round up to express the next available business day
-	const taskEnd = moment(startMoment.businessAdd(Math.ceil(daysToAdd))._d);
+	const taskEnd = moment(startMoment.businessAdd(Math.round(daysToAdd))._d);
 
 	// Check if task ends within one of the blocked periods provided
 	const blockPeriod = blockedPeriods.find(block => taskEnd.isSame(block.start) || taskEnd.isAfter(block.start));
@@ -49,11 +49,11 @@ function sumNrNormDays(tasks) {
 
 function calcDeadlines(tasks, start, blockedPeriods, timeAllocation) {
 	const startMoment = moment(start);
-	let lastTaskDays = 0;
+	let lastTaskNormDays = 0;
 	return tasks.map(task => {
-		const realDays = task.nrNormDays / timeAllocation;
-		lastTaskDays += realDays;
-		const taskDeadline = businessAddWithBlocked(startMoment, lastTaskDays, blockedPeriods);
+		lastTaskNormDays += task.nrNormDays;
+		const realDays = lastTaskNormDays / timeAllocation;
+		const taskDeadline = businessAddWithBlocked(startMoment, realDays, blockedPeriods);
 		return Object.assign({}, task, {
 			deadline: taskDeadline.format('YYYY-MM-DD'),
 			realDays,
