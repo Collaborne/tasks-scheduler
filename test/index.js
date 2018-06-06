@@ -177,4 +177,18 @@ describe('Task scheduler', () => {
 			expect(result.end).to.be.equals(deadlines[lastTask.id]);
 		});
 	});
+
+	describe('correctly calculates progress', () => {
+		it('for a set of given tasks', () => {
+			const inputParams = {
+				end: END_DATE_8_MARCH,
+				start: START_DATE,
+				tasks: TASKS,
+			};
+			const {progress} = schedule(inputParams);
+			expect(Object.keys(progress)).to.have.lengthOf(inputParams.tasks.length);
+			expect(progress[TASK1_ID]).to.be.equals(0.5);
+			expect(progress[TASK2_ID]).to.be.equals(1);
+		});
+	});
 });

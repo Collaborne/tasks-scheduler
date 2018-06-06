@@ -48,6 +48,8 @@ function sumNrNormDays(tasks) {
 }
 
 function calcDeadlines(tasks, start, blockedPeriods, timeAllocation) {
+	const totalNrNormDays = sumNrNormDays(tasks);
+
 	const startMoment = moment(start);
 	let lastTaskNormDays = 0;
 	return tasks.map(task => {
@@ -57,6 +59,7 @@ function calcDeadlines(tasks, start, blockedPeriods, timeAllocation) {
 		return {
 			deadline: taskDeadline.format('YYYY-MM-DD'),
 			id: task.id,
+			progress: lastTaskNormDays / totalNrNormDays,
 		};
 	});
 }
@@ -82,7 +85,8 @@ function calcDeadlines(tasks, start, blockedPeriods, timeAllocation) {
  * The computed scheduling.
  *
  * @typedef SchedulingResult
- * @property {Object[]} deadlines List of deadline objects
+ * @property {Map.<string, String>} deadlines Map of deadlines by task ID
+ * @property {Map.<string, Number>} progress List of progress objects
  * @property {string} start String representing the start date in ISO format (eg. '2018-03-19').
  * @property {string} end String representing the end date in ISO format (eg. '2018-03-19').
  * @property {number} nrNormDays Number of normalized days required to complete all tasks (e.g. if time allocation would be 100%)
@@ -145,12 +149,16 @@ function schedule(params) {
 	const deadlineById = deadlines.reduce((acc, task) => Object.assign(acc, {
 		[task.id]: task.deadline,
 	}), {});
+	const progressById = deadlines.reduce((acc, task) => Object.assign(acc, {
+		[task.id]: task.progress,
+	}), {});
 
 	return {
 		deadlines: deadlineById,
 		end: endDate.format('YYYY-MM-DD'),
 		nrNormDays,
 		nrRealDays,
+		progress: progressById,
 		start: startDate.format('YYYY-MM-DD'),
 		timeAllocation,
 	};
