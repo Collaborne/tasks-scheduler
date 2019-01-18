@@ -16,27 +16,25 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint -c tslint.json \"src/**/*.ts\" \"test/**/*.ts\"",
-    "test": "node ${_NODE_ARGS} node_modules/.bin/_mocha --recursive -r ts-node/register \"test/**/*.ts\"",
+    "test": "TS_NODE_COMPILER_OPTIONS='{ \"module\": \"commonjs\" }' node ${_NODE_ARGS} node_modules/.bin/_mocha --recursive -r ts-node/register \"test/**/*.ts\"",
     "prepublish": "npm run lint && npm run build"
   },
   "engines": {
     "node": ">=8.9.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.1.4",
+    "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.5.3",
     "chai": "^4.1.2",
-    "mocha": "^5.0.0",
+    "mocha": "^5.1.1",
     "ts-node": "^7.0.0",
     "tslint": "^5.11.0",
-    "tslint-config-collaborne": "^0.0.3",
-    "typescript": "^3.0.1"
+    "tslint-config-collaborne": "^0.0.3"
   },
   "dependencies": {
-    "check-node-version": "^3.0.0",
     "moment": "^2.20.1",
     "moment-business-days": "^1.0.6",
-    "npm-warn-shrinkwrap": "^1.0.2"
+    "typescript": "^3.2.4"
   }
 }

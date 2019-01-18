@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+import 'mocha';
+
 import { schedule } from '../src/index';
 
 // Monday 5 March, 2018
