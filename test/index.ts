@@ -1,7 +1,5 @@
-const chai = require('chai');
-const expect = chai.expect;
-
-const {schedule} = require('../src/index');
+import { expect } from 'chai';
+import { schedule } from '../src/index';
 
 // Monday 5 March, 2018
 const START_DATE = '2018-03-05';
@@ -17,11 +15,11 @@ const TASK2_ID = 'Second-task';
 const TASKS = [
 	{
 		id: TASK1_ID,
-		nrNormDays: 1.4
+		nrNormDays: 1.4,
 	},
 	{
 		id: TASK2_ID,
-		nrNormDays: 1.4
+		nrNormDays: 1.4,
 	},
 ];
 
@@ -135,7 +133,7 @@ describe('Task scheduler', () => {
 				{
 					end: '2018-03-09',
 					start: '2018-03-07',
-				}
+				},
 			];
 			const inputParams = {
 				blockedPeriods: BLOCKED_PERIODS,
@@ -158,7 +156,7 @@ describe('Task scheduler', () => {
 				{
 					end: '2018-03-11',
 					start: '2018-03-10',
-				}
+				},
 			];
 			const inputParams = {
 				blockedPeriods: BLOCKED_PERIODS,

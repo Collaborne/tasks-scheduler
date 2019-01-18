@@ -1,0 +1,22 @@
+{
+	"extends": "./node_modules/@collaborne/tsconfig/tsconfig",
+	"compilerOptions": {
+		"declaration": true,
+		"outDir": "./dist",
+		"allowSyntheticDefaultImports": true,
+		"module": "es6",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"target": "es6"
+	},
+	"include": [
+		"./src/**/*"
+	]
+}

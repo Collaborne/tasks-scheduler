@@ -11,37 +11,28 @@
     "type": "git",
     "url": "git+https://github.com/Collaborne/tasks-scheduler.git"
   },
-  "files": [
-    "dist/*",
-    "lib/*",
-    "src/*"
-  ],
-  "main": "./lib/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "install": "npm-warn-shrinkwrap && check-node-version --package",
-    "compile": "npm run lint && babel --presets es2015 --source-maps -d lib/ src/",
-    "lint": "eslint src test",
-    "build": "npm run build-dist && npm run build-min",
-    "build-dist": "mkdir -p dist && browserify -d -r $npm_package_main:collaborne-tasks-scheduler | exorcist dist/collaborne-tasks-scheduler.js.map > dist/collaborne-tasks-scheduler.js",
-    "build-min": "uglifyjs dist/collaborne-tasks-scheduler.js --comments --source-map \"content='./dist/collaborne-tasks-scheduler.js.map'\" -o dist/collaborne-tasks-scheduler.min.js",
-    "prepublish": "npm run compile && npm run build",
-    "test": "node ${_NODE_ARGS} node_modules/.bin/_mocha --recursive"
+    "build": "tsc",
+    "lint": "tslint -c tslint.json \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test": "node ${_NODE_ARGS} node_modules/.bin/_mocha --recursive -r ts-node/register \"test/**/*.ts\"",
+    "prepublish": "npm run lint && npm run build"
   },
   "engines": {
     "node": ">=8.9.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-plugin-transform-builtin-extend": "^1.1.0",
-    "babel-preset-es2015": "^6.18.0",
-    "browserify": "~11.1.0",
-    "browserify-shim": "^3.8.12",
+    "@collaborne/tsconfig": "^0.0.2",
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.5.3",
     "chai": "^4.1.2",
-    "eslint": "^4.12.0",
-    "eslint-config-collaborne": "^1.1.0",
-    "exorcist": "^1.0.1",
-    "mocha": "^5.0.1",
-    "uglify-js": "^3.3.12"
+    "mocha": "^5.0.0",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.11.0",
+    "tslint-config-collaborne": "^0.0.3",
+    "typescript": "^3.0.1"
   },
   "dependencies": {
     "check-node-version": "^3.0.0",
