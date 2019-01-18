@@ -1,6 +1,6 @@
 {
   "name": "collaborne-tasks-scheduler",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A time-based scheduler for tasks",
   "license": "Apache-2.0",
   "bugs": {
