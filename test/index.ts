@@ -12,6 +12,9 @@ const END_DATE_8_MARCH = '2018-03-08';
 // Tuesday 13 March, 2018
 const END_DATE_13_MARCH = '2018-03-13';
 
+// Tuesday 15 March, 2018
+const END_DATE_15_MARCH = '2018-03-15';
+
 const TASK1_ID = 'First-task';
 const TASK2_ID = 'Second-task';
 const TASKS = [
@@ -146,7 +149,7 @@ describe('Task scheduler', () => {
 			const result = schedule(inputParams);
 			const deadlines = result.deadlines;
 			expect(deadlines[TASK1_ID]).to.be.equals('2018-03-06');
-			expect(deadlines[TASK2_ID]).to.be.equals(END_DATE_13_MARCH);
+			expect(deadlines[TASK2_ID]).to.be.equals(END_DATE_15_MARCH);
 
 			// Check also that last task's deadline equals the end of the project
 			const lastTask = TASKS[TASKS.length - 1];

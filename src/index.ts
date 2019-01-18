@@ -1,4 +1,5 @@
-import * as moment from 'moment-business-days';
+import * as moment from 'moment';
+import { businessAdd, businessDiff } from './business-days';
 
 /**
  * Task to be scheduled.
@@ -106,14 +107,14 @@ interface EnrichedBlockedPeriod {
 function businessAddWithBlocked(startMoment: moment.Moment, daysToAdd: number, blockedPeriods: EnrichedBlockedPeriod[]): moment.Moment {
 	// Function businessAdd() fails on non-integers
 	// NB. Round up to express the next available business day
-	const taskEnd = moment.default(startMoment.businessAdd(Math.round(daysToAdd)));
+	const taskEnd = businessAdd(startMoment, Math.round(daysToAdd));
 
 	// Check if task ends within one of the blocked periods provided
 	const blockPeriod = blockedPeriods.find(block => taskEnd.isSame(block.start) || taskEnd.isAfter(block.start));
 	if (blockPeriod) {
 		// Move the deadline by the number of blocked days
 		// NB. Add one to round up to the next available business day
-		return moment.default(taskEnd.businessAdd(blockPeriod.nrBlockDays + 1));
+		return businessAdd(taskEnd, blockPeriod.nrBlockDays + 1);
 	}
 
 	return taskEnd;
@@ -184,7 +185,7 @@ export function schedule(options: ScheduleOptions): SchedulingResult {
 	const nrNormDays = sumNrNormDays(options.tasks);
 
 	const blockedPeriods: EnrichedBlockedPeriod[] = (options.blockedPeriods || []).map(period => ({
-		nrBlockDays: moment.default(period.start).businessDiff(moment.default(period.end)),
+		nrBlockDays: businessDiff(startDate, moment.default(period.end)),
 		start: period.start,
 	}));
 
@@ -199,7 +200,7 @@ export function schedule(options: ScheduleOptions): SchedulingResult {
 		throw new Error('End or time allocation must be provided');
 	}
 
-	const nrRealDays = startDate.businessDiff(moment.default(endDate));
+	const nrRealDays = businessDiff(startDate, moment.default(endDate));
 
 	let timeAllocation;
 	if (options.end) {
