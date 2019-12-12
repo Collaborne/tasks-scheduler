@@ -1,0 +1,32 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/setup-node@v1
+      with:
+        node-version:  ${{ matrix.node-version }}
+        registry-url: 'https://registry.npmjs.org'
+    - name: npm install, lint, and test
+      run: |
+        npm install
+        npm run lint
+        npm test
+    - name: Publish to npmjs
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
